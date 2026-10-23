@@ -1,0 +1,150 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* Ink: text on the dark glass, strongest to faintest. */
+  --color-ink: #eceef2;
+  --color-ink-muted: #a3a6b1;
+  --color-ink-faint: #6c6f7b;
+
+  /* Surfaces layered on the panel. */
+  --color-surface: rgb(20 21 27 / 0.9);
+  --color-surface-raised: rgb(255 255 255 / 0.055);
+  --color-surface-hover: rgb(255 255 255 / 0.085);
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.16);
+
+  /* The aurora accent used by the orb and active controls. */
+  --color-aurora-1: #7dd3fc;
+  --color-aurora-2: #a78bfa;
+  --color-aurora-3: #f0abfc;
+
+  --color-danger: #f87171;
+  --color-ok: #4ade80;
+  --color-warn: #fbbf24;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    /* The window itself is transparent; only the orb and panel paint. */
+    background: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    cursor: default;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(125 211 252 / 0.7);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgb(167 139 250 / 0.35);
+  }
+}
+
+@utility app-drag {
+  -webkit-app-region: drag;
+}
+
+@utility app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* The chat panel: dark tinted glass with a top highlight and soft depth. */
+@utility glass-panel {
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgb(167 139 250 / 0.1), transparent 60%),
+    radial-gradient(90% 50% at 0% 0%, rgb(125 211 252 / 0.07), transparent 55%),
+    linear-gradient(180deg, rgb(32 33 41 / 0.94), rgb(17 18 23 / 0.96));
+  border: 1px solid var(--color-line);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 8px 22px -6px rgb(0 0 0 / 0.55);
+}
+
+@utility aurora-conic {
+  background: conic-gradient(
+    from 0deg,
+    var(--color-aurora-1),
+    var(--color-aurora-2),
+    var(--color-aurora-3),
+    var(--color-aurora-1)
+  );
+}
+
+@utility aurora-linear {
+  background: linear-gradient(
+    135deg,
+    var(--color-aurora-1),
+    var(--color-aurora-2) 55%,
+    var(--color-aurora-3)
+  );
+}
+
+@utility thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+}
+
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@utility animate-caret {
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-caret {
+    animation: none;
+  }
+}
+
+/* The streaming caret sits after the last bit of text, even inside lists. */
+@layer components {
+  .sb-caret,
+  .sb-md.is-streaming > :last-child:not(ul, ol, div)::after,
+  .sb-md.is-streaming > :is(ul, ol):last-child > li:last-child::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 2px;
+    border-radius: 9999px;
+    background: var(--color-aurora-1);
+    vertical-align: -0.2em;
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sb-caret,
+    .sb-md.is-streaming > :last-child::after,
+    .sb-md.is-streaming > :is(ul, ol):last-child > li:last-child::after {
+      animation: none;
+    }
+  }
+}
