@@ -69,6 +69,21 @@ Each item below is implemented and covered by automated tests (see [docs/TEST_RE
 
 The architecture is described in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and the security design in [docs/SECURITY.md](docs/SECURITY.md). Every design decision is logged in [docs/DECISIONS.md](docs/DECISIONS.md). The full write-up is in [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md), and the live demo plan is in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
 
+## Install from the DMG
+
+1. Open `ScreenBuddy-0.1.0-arm64.dmg` and drag **ScreenBuddy** into **Applications**.
+2. First launch: the app is ad-hoc signed and **not notarized** (there's no Apple Developer certificate), so macOS blocks it. Open it once, then go to **System Settings → Privacy & Security** and click **Open Anyway** next to the ScreenBuddy message. (Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/ScreenBuddy.app`.)
+3. The orb appears in the bottom-right corner, and an icon appears in the menu bar. There's no Dock icon.
+
+The installed app asks for permissions as **ScreenBuddy**, unlike `npm run dev`, which asks as "Electron".
+
+**Building the DMG yourself:** `npm run dist` writes `dist/ScreenBuddy-<version>-arm64.dmg`. If the project is in an iCloud-synced folder (Desktop or Documents), code signing fails with _"resource fork, Finder information, or similar detritus not allowed"_. In that case build outside the synced folder:
+
+```sh
+npx electron-vite build
+CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --mac dmg --arm64 -c.directories.output="$HOME/Library/Caches/screenbuddy-build"
+```
+
 ## Setup
 
 Requirements: macOS on Apple Silicon, Node.js 22.12 or newer, and npm.
@@ -115,7 +130,7 @@ npm run build       # production build into out/
 | **Microphone**       | Voice input                                     | A card links to System Settings → Privacy & Security → Microphone.                                                   |
 | _(none)_             | Typed chat, uploads, mock mode, annotation demo | Everything else works without permissions.                                                                           |
 
-In development, macOS attributes both permissions to **Electron**, not "ScreenBuddy", so turn on "Electron" in System Settings. Neither permission is used in the background: capture happens only on Capture, Send or retake, and the microphone opens only while the red recording indicator is visible.
+With `npm run dev`, macOS attributes both permissions to **Electron**, not "ScreenBuddy", so turn on "Electron" in System Settings. The installed app (DMG) asks as **ScreenBuddy**. Neither permission is used in the background: capture happens only on Capture, Send or retake, and the microphone opens only while the red recording indicator is visible.
 
 ## Screenshots
 
@@ -139,11 +154,11 @@ These were captured from the running app with the project's Playwright harness: 
 
   All of these are tested only through fakes and a local mock server. Details are in [docs/TEST_REPORT.md](docs/TEST_REPORT.md).
 
-- **Not built:** packaging into a `.app` or DMG. Run it with `npm run dev`.
+- **Packaging is basic:** the DMG is ad-hoc signed and not notarized, so Gatekeeper warns on first open. It has no hardened runtime or Electron fuses. Apple Silicon only.
 
 ## Future scope
 
-- A signed, packaged `.app` and DMG with hardened runtime (planned as Phase 9).
+- Developer ID signing and notarization, the hardened runtime and Electron fuses (planned as Phase 9).
 - One annotation overlay per display, "show again", and an accuracy evaluation with real vision models.
 - Step-by-step guided tutorials that re-check the screen at each step (planned).
 - Browser automation in a separate, isolated browser with per-action approval (planned, deliberately not built).

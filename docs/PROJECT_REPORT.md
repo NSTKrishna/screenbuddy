@@ -123,7 +123,7 @@ The source is about 9,800 lines of TypeScript and TSX in 97 files under `src/`, 
 ## 7. Limitations
 
 - **Not verified on real hardware or services:** a successful real screen capture, a real microphone, real AI or speech providers, and real models' annotation accuracy. The automated tests use fakes for all of these.
-- macOS on Apple Silicon only. No packaged, signed `.app` or DMG yet.
+- macOS on Apple Silicon only. The DMG is ad-hoc signed and not notarized, so Gatekeeper warns on first open. It has no hardened runtime or fuses.
 - Annotations appear on one display (the screenshot's display). Uploaded images get none. Accuracy depends entirely on the model.
 - Live transcription partials appear while a recording is being transcribed, not while the user is still speaking.
 - Only one conversation is remembered (opt-in, text only). There's no conversation list.
@@ -131,7 +131,7 @@ The source is about 9,800 lines of TypeScript and TSX in 97 files under `src/`, 
 
 ## 8. Future improvements
 
-1. Packaging: a signed `.app` and DMG with hardened runtime and Electron fuses, plus a smoke test against the packaged build.
+1. Release-grade packaging: Developer ID signing and notarization, the hardened runtime and Electron fuses.
 2. An annotation accuracy study with several vision models. One overlay per display, and snapping to UI elements.
 3. Guided step-by-step tutorials that re-check the screen at each step.
 4. Opt-in browser automation in a separate, isolated browser with approval for every action.

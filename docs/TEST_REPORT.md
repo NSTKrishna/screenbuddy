@@ -107,6 +107,7 @@ These are the only checks done *outside* the fakes:
 | The real macOS Screen Recording status for Electron | It is `denied` on the development machine. Clicking Capture with the **real** capture backend showed the permission guidance card, and no macOS prompt appeared (screenshot `docs/screenshots/04-screen-permission-denied.png`). |
 | Renderer console during dev and production loads | No errors or CSP violations (also asserted by E2E test 4) |
 | Logs during a full E2E run | 22 app log lines, none containing an API key, `Bearer` token or base64 image or audio data |
+| Packaged app (`ScreenBuddy-0.1.0-arm64.dmg`, built with electron-builder 26.17.0) | `codesign --verify --deep --strict` reports valid (ad-hoc). `hdiutil verify` reports a valid DMG checksum. The `app.asar` contains only `out/`, `resources/`, `package.json` and runtime `node_modules` (no `src/`, `tests/` or `docs/`). Launched through Playwright with a separate profile, the packaged app reported `isPackaged: true` and version 0.1.0, had no test hooks, answered a mock-mode chat, drew the 3-shape annotation demo, reported the permission grantee as "ScreenBuddy", had no console errors, and quit with exit code 0. **Not tested:** installing from the DMG into /Applications and the Gatekeeper first-open flow. |
 
 ## 4. Known issues
 
@@ -122,5 +123,5 @@ These are the only checks done *outside* the fakes:
    - **Annotation accuracy:** how accurately a real vision model returns coordinates. That is unverified, and the mock server's coordinates are scripted.
 3. **npm 10.9 crash on fresh dependency resolution** (`Cannot read properties of null (reading 'edgesOut')`). Installing from the committed lockfile works with npm 10. Adding packages needs `npx npm@11`.
 4. **`ELECTRON_RUN_AS_NODE`.** When run from a shell that inherits it (for example VS Code's extension host), Electron starts as plain Node. The `dev` and `preview` scripts unset it, but running `electron` directly from such a shell won't work.
-5. **No packaged build.** There is no `.app` or DMG, code signing or notarization. The app runs via `npm run dev`.
+5. **Packaging is basic.** The DMG is ad-hoc signed and not notarized, so Gatekeeper blocks the first open until the user allows it in System Settings. It has no hardened runtime or Electron fuses. Building inside an iCloud-synced folder fails at code signing (extended attributes); the README shows the workaround.
 6. **Single annotation overlay.** Annotations are drawn on the one display the screenshot came from. Uploaded images (which have no display) get no annotations.
