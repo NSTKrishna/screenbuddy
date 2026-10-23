@@ -20,8 +20,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "electron-vite build && playwright test",
-    "icons": "node scripts/generate-tray-icon.mjs",
-    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json"
+    "icons": "node scripts/generate-tray-icon.mjs && node scripts/generate-app-icon.mjs",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
+    "dist": "electron-vite build && electron-builder --mac dmg --arm64"
   },
   "dependencies": {
     "lucide-react": "1.61.0",
@@ -43,6 +44,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "5.2.0",
     "electron": "44.9.3",
+    "electron-builder": "26.17.0",
     "electron-vite": "5.0.0",
     "eslint": "10.13.0",
     "eslint-plugin-react-hooks": "7.1.1",

@@ -1,0 +1,34 @@
+# Packaging for macOS on Apple Silicon (D-015). Build with `npm run dist`.
+appId: com.screenbuddy.app
+productName: ScreenBuddy
+copyright: ScreenBuddy contributors
+
+directories:
+  output: dist
+  buildResources: build
+
+# Only the built app and its runtime assets; sources, tests and docs stay out.
+files:
+  - out/**
+  - resources/**
+  - package.json
+  - '!**/*.map'
+
+mac:
+  target:
+    - target: dmg
+      arch: arm64
+  category: public.app-category.productivity
+  # Ad-hoc signature: Apple Silicon won't run unsigned apps, and there is no
+  # Developer ID certificate. Gatekeeper will warn on first open (see README).
+  identity: '-'
+  hardenedRuntime: false
+  extendInfo:
+    # A menu-bar app: no Dock icon, even for the moment before app.dock.hide().
+    LSUIElement: true
+    NSMicrophoneUsageDescription: ScreenBuddy uses the microphone only after you click the mic button, to hear your question.
+    NSScreenCaptureUsageDescription: ScreenBuddy captures your screen only when you ask it to, and shows you the screenshot before sending it.
+
+dmg:
+  title: ScreenBuddy ${version}
+  artifactName: ScreenBuddy-${version}-arm64.${ext}
